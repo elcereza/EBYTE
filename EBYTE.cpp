@@ -354,8 +354,6 @@ method to set the channel
 */
 
 void EBYTE::SetChannel(uint8_t val) {
-	if(val > 30)
-		val = 30;
 	_Channel = val;
 }
 uint8_t EBYTE::GetChannel() {
