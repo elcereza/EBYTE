@@ -1,4 +1,3 @@
- 
 /*
   The MIT License (MIT)
   Copyright (c) 2019 Kris Kasrpzak
@@ -35,8 +34,8 @@
   4.0			6/23/2020	Kasprzak		Added private method to clear the buffer to ensure read methods would not be filled with buffered data
   5.0			12/4/2020	Kasprzak		moved Reset to public, added Clear to SetMode to avoid buffer corruption during programming
   5.5			1/26/2022	Kasprzak		added attempt parameter to limit the retries
-
-
+  5.7			8/10/2024	Kasprzak		fixed attempt iterator if connection is not made
+  
   Module connection
   Module	MCU						Description
   MO		Any digital pin*		pin to control working/program modes
@@ -63,6 +62,10 @@
   
 */
 
+#ifndef EBYTE_H_LIB
+#define EBYTE_H_LIB
+
+#define EBYTE_H_LIB_VER 5.7
 
 #if ARDUINO >= 100
 #include "Arduino.h"
@@ -75,7 +78,6 @@
 // #include <avr/io.h>
 
 /* 
-
 if modules don't seem to save or read parameters, it's probably due to slow pin changing times
 in the module. I see this happen rarely. You will have to adjust this value
 when settin M0 an M1 there is gererally a short time for the transceiver modules
@@ -90,7 +92,7 @@ if your unit will not return parameter settings.
 
 
 // modes NORMAL send and recieve for example
-#define MODE_NORMAL 0			// can send and recieve
+#define EBYTE_MODE_NORMAL 0			// can send and recieve
 #define MODE_WAKEUP 1			// sends a preamble to waken receiver
 #define MODE_POWERDOWN 2		// can't transmit but receive works only in wake up mode
 #define MODE_PROGRAM 3			// for programming
@@ -174,8 +176,6 @@ if your unit will not return parameter settings.
 #define OPT_TP11 0b11		// 10 db
 #define OPT_TP10 0b11		// 10 db
 
-
-
 class Stream;
 
 class EBYTE {
@@ -191,10 +191,10 @@ public:
 	// ALL parameters must be sent even if only one option is changed--hence get all parameters initially
 	// so you know what the non changed parameters are know for resending back
 
-	bool init(uint8_t _Attempts = 5);
+	bool init(uint8_t Attempts = 5);
 	
 	// methods to set modules working parameters NOTHING WILL BE SAVED UNLESS SaveParameters() is called
-	void SetMode(uint8_t mode = MODE_NORMAL);
+	void SetMode(uint8_t mode = EBYTE_MODE_NORMAL);
 	void SetAddress(uint16_t val = 0);
 	void SetAddressH(uint8_t val = 0);
 	void SetAddressL(uint8_t val = 0);
@@ -239,7 +239,6 @@ public:
 
 	uint8_t GetOptions();
 	uint8_t GetSpeed();
-
 		
 	// methods to get data from sending unit
 	uint8_t GetByte();
@@ -263,8 +262,6 @@ public:
 	void Reset();
 
 protected:
-
-
 
 	// function to read modules parameters
 	bool ReadParameters();
@@ -324,3 +321,4 @@ private:
 
 };
 
+#endif
